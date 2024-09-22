@@ -51,6 +51,11 @@ export default {
           return filter.value.amount > request.amount
         }
         return request
+      }).filter(request => {
+        if (filter.value.phoneNumber) {
+          return request.phone.includes(filter.value.phoneNumber)
+        }
+        return request
       })
     })
     const loading = ref(false)
