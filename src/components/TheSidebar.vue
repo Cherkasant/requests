@@ -19,8 +19,6 @@ import QuestionModal from "@/components/questions/QuestionModal";
 import QuestionMessages from "@/components/questions/QuestionMessages";
 
 export default {
-  emits: ['created'
-  ],
   name: "TheSidebar",
   setup() {
     const store = useStore()
@@ -33,7 +31,6 @@ export default {
     const comments = computed(() => {
       return store.getters['messages/comments']
     })
-    console.log(comments)
 
 
     const modal = ref(false)

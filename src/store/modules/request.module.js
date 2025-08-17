@@ -14,6 +14,15 @@ export default {
         },
         addRequest(state, request) {
             state.requests.push(request)
+        },
+        updateRequest(state, updatedRequest) {
+            const index = state.requests.findIndex(r => r.id === updatedRequest.id)
+            if (index !== -1) {
+                state.requests.splice(index, 1, updatedRequest)
+            }
+        },
+        removeRequest(state, id) {
+            state.requests = state.requests.filter(r => r.id !== id)
         }
     },
     actions: {
@@ -21,7 +30,6 @@ export default {
             try {
                 const token = store.getters["auth/token"]
                 const {data} = await axios.post(`/requests.json?auth=${token}`, payload)
-                console.log(data)
                 commit('addRequest', {...payload, id: data.name})
                 dispatch('setMessage', {
                     value: 'Заявка успешно создана',
@@ -38,7 +46,7 @@ export default {
             try {
                 const token = store.getters["auth/token"]
                 const {data} = await axios.get(`/requests.json?auth=${token}`)
-                const requests = Object.keys(data).map(id => ({...data[id], id}))
+                const requests = data ? Object.keys(data).map(id => ({...data[id], id})) : []
                 commit('setRequests', requests)
             } catch (e) {
                 dispatch('setMessage', {
@@ -59,10 +67,11 @@ export default {
                 }, {root: true})
             }
         },
-        async remove({dispatch}, id) {
+        async remove({commit, dispatch}, id) {
             try {
                 const token = store.getters["auth/token"]
                 await axios.delete(`/requests/${id}.json?auth=${token}`)
+                commit('removeRequest', id)
                 dispatch('setMessage', {
                     value: 'Заявка удалена',
                     type: 'primary'
@@ -74,10 +83,11 @@ export default {
                 }, {root: true})
             }
         },
-        async update({dispatch}, request) {
+        async update({commit, dispatch}, request) {
             try {
                 const token = store.getters["auth/token"]
                 await axios.put(`/requests/${request.id}.json?auth=${token}`, request)
+                commit('updateRequest', request)
                 dispatch('setMessage', {
                     value: 'Заявка обновлена',
                     type: 'primary'
