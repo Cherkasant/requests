@@ -1,5 +1,5 @@
 <template>
-  <form @submit="onSubmit">
+  <form @submit.prevent="onSubmit">
     <div class="form-control">
       <label for="message">Введите новое сообщение</label>
       <input type="text" id="message" v-model="message" @blur="messageBlur" placeholder="Введите сообщение">

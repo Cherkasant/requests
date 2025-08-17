@@ -14,6 +14,9 @@ export default {
         },
         addComment(state, comment) {
             state.comments.push(comment)
+        },
+        removeComment(state, id) {
+            state.comments = state.comments.filter(c => c.id !== id)
         }
     },
     actions: {
@@ -21,7 +24,6 @@ export default {
             try {
                 const token = store.getters["auth/token"]
                 const {data} = await axios.post(`/comments.json?auth=${token}`, payload)
-                console.log(data)
                 commit('addComment', {...payload, id: data.name})
                 dispatch('setMessage', {
                     value: 'Сообщение успешно создано',
@@ -38,7 +40,7 @@ export default {
             try {
                 const token = store.getters["auth/token"]
                 const {data} = await axios.get(`/comments.json?auth=${token}`)
-                const comments = Object.keys(data).map(id => ({...data[id], id}))
+                const comments = data ? Object.keys(data).map(id => ({...data[id], id})) : []
                 commit('setComments', comments)
             } catch (e) {
                 dispatch('setMessage', {
@@ -59,10 +61,11 @@ export default {
                 }, {root: true})
             }
         },
-        async remove({dispatch}, id) {
+        async remove({commit, dispatch}, id) {
             try {
                 const token = store.getters["auth/token"]
                 await axios.delete(`/comments/${id}.json?auth=${token}`)
+                commit('removeComment', id)
                 dispatch('setMessage', {
                     value: 'Сообщение удалено',
                     type: 'primary'

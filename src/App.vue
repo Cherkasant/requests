@@ -1,5 +1,5 @@
 <template>
-  <component :is="layout+'-layout'" v-if="layout"/>
+  <component :is="layoutComponent" v-if="layoutComponent"/>
 </template>
 
 <script>
@@ -14,8 +14,8 @@ export default {
     const route = useRoute()
 
     return {
-      layout: computed(() =>
-          route.meta.layout
+      layoutComponent: computed(() =>
+          route.meta.layout === 'auth' ? AuthLayout : MainLayout
       )
     }
   },
